@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cSpell.words": [
+			"Conv",
+			"cifar",
+			"iloc",
+			"keras",
+			"numpy",
+			"pyplot",
+			"sklearn",
+			"yahoofinancials",
+			"yfinance"
+		]
+	}
+}
