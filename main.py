@@ -3,6 +3,7 @@
 # !pip install yfinance
 # !pip install --upgrade tensorflow
 
+print('test')
 import numpy as np
 import pandas as pd
 #from yahoofinancials import YahooFinancial
