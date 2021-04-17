@@ -5,11 +5,16 @@
 
 import numpy as np
 import pandas as pd
-#from yahoofinancials import YahooFinancial
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
 import yfinance as yf
-import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
+
+import tensorflow as tf
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense, LSTM, Dropout
 
 # Get Data
 amd_stock = yf.Ticker('AMD')
@@ -69,6 +74,6 @@ xtrainingAll2 = std.fit_transform(xtrainingAll1)
 xtestingAll2 = std.transform(xtestingAll1)
 
 # Normalize, but wont change distribution and weights
-scaler = MinMaxScaler(feature_range=(0,1))
+scaler = MinMaxScaler(feature_range=(-1,1))
 xtrainingAll3 = scaler.fit_transform(xtrainingAll2)
 xtestingAll3 = scaler.transform(xtestingAll2)
