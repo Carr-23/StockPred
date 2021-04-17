@@ -13,8 +13,12 @@
 			"numpy",
 			"pyplot",
 			"sklearn",
+			"xtesting",
+			"xtraining",
 			"yahoofinancials",
-			"yfinance"
+			"yfinance",
+			"ytesting",
+			"ytraining"
 		]
 	}
 }
