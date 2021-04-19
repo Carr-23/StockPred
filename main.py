@@ -83,7 +83,7 @@ xtrainingAll4 = scaler.fit_transform(xtrainingAll3)
 xtestingAll4 = scaler.transform(xtestingAll3)
 
 # Splitting Data by 50 history points with x and y division on numpy array
-xtrainingAll5,xtestingAll5 = np.array(xtrainingAll5),np.array(xtestingAll4)
+xtrainingAll5,xtestingAll5 = np.array(xtrainingAll4),np.array(xtestingAll4)
 
 xtrainingAllFinal = []
 xtestingAllFinal = []
@@ -95,7 +95,7 @@ for x in range(50, xtrainingAll5.shape[0]):
     xtrainingAllFinal.append(xtrainingAll5[x-50:x])
     ytrainingAllFinal.append(ytrainingAll2[x,0])
 
-for x in range(50, xtestingAll1.shape[0]):
+for x in range(50, xtestingAll5.shape[0]):
     xtestingAllFinal.append(xtestingAll5[x-50:x])
     ytestingAllFinal.append(ytestingAll2[x,0])
 
@@ -103,17 +103,17 @@ for x in range(50, xtestingAll1.shape[0]):
 xtrainingAllFinal,xtestingAllFinal = np.array(xtrainingAllFinal),np.array(xtestingAllFinal)
 ytrainingAllFinal,ytestingAllFinal = np.array(ytrainingAllFinal),np.array(ytestingAllFinal)
 
-# Creating Model
+# Creating Model 1
 # ? So I want to try starting the first layer with double the amount of neurons as the input size however have 50% dropout
-
 model = Sequential()
-
 # Input Layer
+model.add(LSTM(units = 50, input_shape=(xtrainingAll3.shape[1],4)))
+# Hidden Layers
+model.add(Dropout(0.3))
+model.add(LSTM(units = 40))
+model.add(Dropout(0.2))
+model.add(LSTM(units = 25))
+model.add(Dropout(0.1))
+# Output Layer
+model.add(Dense(units = 1))
 
-model.add(LSTM(xtrainingAll3.shape[0] * 2, input_shape=(xtrainingAll3.shape[])))
-
-# TODO: 
-# Divide the data as a dataframe
-# Do the normalization and standardization on the new split data frame
-# Do the list division on the numpy array
-# We should be left with our 3D data 
