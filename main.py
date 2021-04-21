@@ -15,6 +15,7 @@ from sklearn.preprocessing import StandardScaler
 import tensorflow as tf
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
+import os
 
 # Get Data
 amd_stock = yf.Ticker('AMD')
@@ -55,12 +56,18 @@ for x in range(amd_historyAll.shape[0]):
     if x == 250 * multiplier + 49:
       multiplier+=1
 
+xtrainingAll1 = xtrainingAll.copy()
+xtestingAll1 = xtestingAll.copy()
+ytrainingAll1 = ytrainingAll.copy()
+ytestingAll1 = ytestingAll.copy()
+
+
 xHistory = [xtrainingAll,xtestingAll]
 yHistory = [ytrainingAll,ytestingAll]
 
 # Deleting the useless columns
 for x in xHistory:
-  x.pop('Close')
+   x.pop('Close')
 
 for y in yHistory:
   y.pop('Open')
@@ -69,8 +76,8 @@ for y in yHistory:
   y.pop('Volume')
 
 # Convert DataFrame to numpy array
-xtrainingAll2,xtestingAll2 = np.array(xtrainingAll),np.array(xtestingAll)
-ytrainingAll2,ytestingAll2 = np.array(ytrainingAll),np.array(ytestingAll)
+xtrainingAll2,xtestingAll2 = np.array(xtrainingAll1),np.array(xtestingAll1)
+ytrainingAll2,ytestingAll2 = np.array(ytrainingAll1),np.array(ytestingAll1)
 
 # Standarizing Data
 std = StandardScaler()
@@ -83,7 +90,7 @@ xtrainingAll4 = scaler.fit_transform(xtrainingAll3)
 xtestingAll4 = scaler.transform(xtestingAll3)
 
 # Splitting Data by 50 history points with x and y division on numpy array
-xtrainingAll5,xtestingAll5 = np.array(xtrainingAll5),np.array(xtestingAll4)
+xtrainingAll5,xtestingAll5 = np.array(xtrainingAll4),np.array(xtestingAll4)
 
 xtrainingAllFinal = []
 xtestingAllFinal = []
@@ -95,7 +102,7 @@ for x in range(50, xtrainingAll5.shape[0]):
     xtrainingAllFinal.append(xtrainingAll5[x-50:x])
     ytrainingAllFinal.append(ytrainingAll2[x,0])
 
-for x in range(50, xtestingAll1.shape[0]):
+for x in range(50, xtestingAll5.shape[0]):
     xtestingAllFinal.append(xtestingAll5[x-50:x])
     ytestingAllFinal.append(ytestingAll2[x,0])
 
@@ -103,17 +110,46 @@ for x in range(50, xtestingAll1.shape[0]):
 xtrainingAllFinal,xtestingAllFinal = np.array(xtrainingAllFinal),np.array(xtestingAllFinal)
 ytrainingAllFinal,ytestingAllFinal = np.array(ytrainingAllFinal),np.array(ytestingAllFinal)
 
-# Creating Model
-# ? So I want to try starting the first layer with double the amount of neurons as the input size however have 50% dropout
+if os.path.exists("model1"):
+  model = tf.keras.models.load_model('model1')
+else:
+  # Creating Model 1
+  # ? So I want to try starting the first layer with double the amount of neurons as the input size however have 50% dropout
+  model = Sequential()
+  # Input Layer
+  model.add(LSTM(units = 50, input_shape=(xtrainingAllFinal.shape[1],xtrainingAllFinal.shape[2]), return_sequences = True))
+  # Hidden Layers
+  model.add(Dropout(0.2))
+  model.add(LSTM(units = 70, return_sequences = True))
+  model.add(Dropout(0.2))
+  model.add(LSTM(units = 90, return_sequences = True))
+  model.add(Dropout(0.35))
+  model.add(LSTM(units = 120))
+  model.add(Dropout(0.5))
+  # Output Layer
+  model.add(Dense(units = 1))
 
-model = Sequential()
+  model.summary()
+  model.compile(optimizer = 'adam', loss = "mean_squared_error", metrics = 'mean_squared_error')
+  history = model.fit(xtrainingAllFinal,ytrainingAllFinal,epochs=10,batch_size = 32, verbose = 1)
 
-# Input Layer
+  model.save('model1')
 
-model.add(LSTM(xtrainingAll3.shape[0] * 2, input_shape=(xtrainingAll3.shape[])))
+# Test Model
+yPred = model.predict(xtestingAllFinal)
+print('Scaler: ',scaler.scale_)
+print('MinMax: ',std)
+print(scaler.scale_[0])
 
-# TODO: 
-# Divide the data as a dataframe
-# Do the normalization and standardization on the new split data frame
-# Do the list division on the numpy array
-# We should be left with our 3D data 
+scl = 1/std.scale_[0]  
+
+yPred,ytestingAllFinal = yPred*scl,ytestingAllFinal*scl
+
+plt.figure(figsize=(14,5))
+plt.plot(ytestingAllFinal, color = 'red', label = "Real Stock Price")
+plt.plot(yPred, color = 'red', label = "Predicted Stock Price")
+plt.title('AMD Stock Price Prediction')
+plt.xlabel('Time w/ Jumps of 250')
+plt.ylabel('AMD Stock Price')
+plt.legend()
+plt.show()

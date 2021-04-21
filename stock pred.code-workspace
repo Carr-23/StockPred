@@ -13,11 +13,14 @@
 			"keras",
 			"numpy",
 			"pyplot",
+			"relu",
 			"sklearn",
+			"xlabel",
 			"xtesting",
 			"xtraining",
 			"yahoofinancials",
 			"yfinance",
+			"ylabel",
 			"ytesting",
 			"ytraining"
 		]
