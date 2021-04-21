@@ -143,13 +143,15 @@ print(scaler.scale_[0])
 
 scl = 1/std.scale_[0]  
 
-yPred,ytestingAllFinal = yPred*scl,ytestingAllFinal*scl
+yPred1,ytestingAllFinal1 = yPred*scl,ytestingAllFinal*scl
 
 plt.figure(figsize=(14,5))
-plt.plot(ytestingAllFinal, color = 'red', label = "Real Stock Price")
-plt.plot(yPred, color = 'red', label = "Predicted Stock Price")
+plt.plot(ytestingAllFinal1, color = 'red', label = "Real Stock Price")
+plt.plot(yPred1, color = 'red', label = "Predicted Stock Price")
 plt.title('AMD Stock Price Prediction')
 plt.xlabel('Time w/ Jumps of 250')
 plt.ylabel('AMD Stock Price')
 plt.legend()
 plt.show()
+
+print(yPred1)
